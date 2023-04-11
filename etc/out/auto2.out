@@ -1,0 +1,12 @@
+         CityMPG+    HighwayMPG+    Weight-    Class-    n_evals avg
+-----  ----------  -------------  ---------  --------  -------------
+all            21             28       3040      17.7              0
+sway1       29.55          34.65    2175.75     9.265              5
+xpln1        28.2          32.85    2398.25    10.645              5
+top            33             40     2052.5       8.9             93
+                CityMPG+    HighwayMPG+    Weight-    Class-
+--------------  ----------  -------------  ---------  --------
+all to all      =           =              =          =
+all to sway1    ≠           ≠              ≠          ≠
+sway1 to xpln1  ≠           ≠              ≠          ≠
+sway1 to top    ≠           ≠              ≠          ≠

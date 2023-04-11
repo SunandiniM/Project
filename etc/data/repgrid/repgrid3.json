@@ -1,0 +1,23 @@
+{
+ "domain": "dissementian platforms",
+ "cols": [  [ "Max Strings", 1, 1, 1, 1, 1, 5, 1, 5, "Min Strings" ],
+  [ "Max Blowing Air", 3, 5, 5, 4, 1, 1, 1,	1, "Min Blowing Air" ],
+  [ "High Melodic", 2, 4, 1, 3, 2, 5, 4, 4, "Low Melodic" ],
+  [ "High Difficulty", 5, 3, 4, 4, 2, 3, 1,	3, "Low Difficulty" ],
+  [ "High Aesthetic", 3, 4, 3, 3, 2, 5, 1, 5, "Low Aesthetic" ],
+  [ "High Cost",2, 3, 1, 2, 4, 4, 5, 4, "Low Cost" ],
+  [ "Modern", 3, 1, 3, 2, 4, 2, 4, 5, "Old" ],
+  [ "Classical", 4, 5, 3, 4, 1, 5, 2, 1, "Rock" ]
+ ],
+ "rows": [  [ " ", " ", " ", " ", " ", " ", " ", " ", " ", "BroadbandNetworks" ],
+  [ " ", " ", " ", " ", " ", " ", " ", " ", "InformationHighway" ],
+  [ " ", " ", " ", " ", " ", " ", " ", "IntelligentAgents" ],
+  [ " ", " ", " ", " ", " ", " ", "KnowledgeBasedSystems" ],
+  [ " ", " ", " ", " ", " ", "ObjectOrientedSystems" ],
+  [ " ", " ", " ", " ", "CrossPlatformGUIs" ],
+  [ " ", " ", " ", "VisualProgramming" ],
+  [ " ", " ", "MultimediaAndHypermedia" ],
+  [ " ", "VirtualReality" ],
+  [ "ElectronicPublishing" ]
+ ]
+}

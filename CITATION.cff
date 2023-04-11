@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+authors:
+  - given-names: Kaushik
+    family-names: Jadhav
+    email: kajadhav@ncsu.edu
+    orcid: 'https://orcid.org/0000-0002-7799-4643'
+  - email: avinaya@ncsu.edu
+    given-names: Ajith Kumar
+    family-names: Patchaimayil
+  - given-names: Sunandini
+    family-names: Medisetti
+    email: smedise@ncsu.edu
+    orcid: 'https://orcid.org/0000-0002-7670-3410'
+title: "ASE Project"
+version: 1.0.0
+doi: 10.5281/zenodo.1234
+date-released: 2023-01-16
+url: "https://github.com/NCSU-CSC-591-021-Spring-23-Group-3/Project"
+

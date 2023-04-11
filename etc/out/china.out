@@ -1,0 +1,12 @@
+         N_effort-    n_evals avg
+-----  -----------  -------------
+all           2098              0
+sway1        427.4              6
+xpln1       885.65              6
+top          149.5            499
+                N_effort-
+--------------  -----------
+all to all      =
+all to sway1    ≠
+sway1 to xpln1  ≠
+sway1 to top    ≠
