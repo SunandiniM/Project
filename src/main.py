@@ -22,6 +22,7 @@ def main():
         count = 0
         while count < the['n_iter']:
             data = DATA(the['file'])
+            data2 = impute_missing_values(the['file'], DATA)
             best,rest,evals = data.sway()
             xp = XPLN(best, rest)
             rule,_= xp.xpln(data,best,rest)
@@ -29,11 +30,15 @@ def main():
                 betters, _ = data.betters(len(best.rows))
                 top_table['top']['data'].append(DATA(data,betters))
                 top_table['xpln1']['data'].append(DATA(data,selects(rule,data.rows)))
+                top_table['xpln2']['data'].append(DATA(data,selects(rule,data.rows)))
                 top_table['all']['data'].append(data)
                 top_table['sway1']['data'].append(best)
+                top_table['sway2']['data'].append(best)
                 top_table['all']['evals'] += 0
                 top_table['sway1']['evals'] += evals
+                top_table['sway2']['evals'] += evals
                 top_table['xpln1']['evals'] += evals
+                top_table['xpln2']['evals'] += evals
                 top_table['top']['evals'] += len(data.rows)
                 
                 for i in range(len(bottom_table)):

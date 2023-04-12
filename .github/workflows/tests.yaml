@@ -39,4 +39,5 @@ jobs:
     - name: Upload Coverage to Codecov
       uses: codecov/codecov-action@v2
       with:
-        files: /home/runner/work/Project/Project/src/HW3/htmlcov/index.html
+        files: /home/runner/work/Project/Project/src/htmlcov/index.html
+        token: ${{ secrets.CODECOV_TOKEN }}

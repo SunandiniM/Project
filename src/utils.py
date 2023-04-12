@@ -3,6 +3,8 @@ from config import *
 from pathlib import Path
 from sym import SYM
 from operator import itemgetter
+import pandas as pd
+import numpy as np
 
 class Random:
     def __init__(self):
@@ -31,16 +33,15 @@ def settings(s):
     return dict(re.findall("\n[\s]+[-][\S]+[\s]+[-][-]([\S]+)[^\n]+= ([\S]+)",s))
 
 def coerce(s):
-    if s == 'true':
-        return True
-    elif s == 'false':
-        return False
-    elif s.isdigit():
-        return int(s)
-    elif '.' in s and s.replace('.','').isdigit():
-        return float(s)
-    else:
-        return s
+    bool_s = s.lower()
+    for t in [int, float]:
+        try:
+            return t(s)
+        except ValueError:
+            pass
+    if bool_s in ["true", "false"]:
+        return bool_s == "true"
+    return s
 
 def cli(options):
     args = sys.argv[1:]
@@ -282,3 +283,13 @@ def stats_average(data_array):
     for k,v in res.items():
         res[k] /= the['n_iter']
     return res
+
+def impute_missing_values(file, DATA):
+    df = pd.read_csv(file)
+    for col in df.columns[df.eq('?').any()]:
+        df[col] =df[col].replace('?', np.nan)
+        df[col] = df[col].astype(float)
+        df[col] = df[col].fillna(df[col].mean())
+    file = file.replace('.csv', '_imputed.csv')
+    df.to_csv(file, index=False)
+    return DATA(file)
