@@ -7,6 +7,7 @@ __license__ = "MIT"
 from utils import *
 from test_hw6 import *
 from xpln import *
+from xpln2 import *
 from data import DATA
 from hw7 import *
 from tabulate import tabulate
@@ -19,26 +20,51 @@ def main():
     if the['help'] == True:
         print(help)
     else:
+        hpo_minimal_sampling_params(DATA, XPLN, selects, showRule)
+        hpo_hyperopt_params(DATA, XPLN, selects, showRule)
+
         count = 0
         while count < the['n_iter']:
             data = DATA(the['file'])
-            data2 = impute_missing_values(the['file'], DATA)
+            data2 = preprocess_data(the['file'], DATA)
+
+            best2,rest2,evals2 = data2.sway('pca')
+            xp2 = XPLN2(best2, rest2)
+            best_xpln2, rest_xpln2 = xp2.decision_tree(data2)
+
+            best3,rest3,evals3 = data2.sway('agglomerative_clustering')
+            xp3 = XPLN2(best3, rest3)
+            best_xpln3, rest_xpln3 = xp3.decision_tree(data2)
+
+            best4,rest4,evals4 = data2.sway('kmeans')
+            xp4 = XPLN2(best4, rest4)
+            best_xpln4, rest_xpln4 = xp4.decision_tree(data2)
+
             best,rest,evals = data.sway()
             xp = XPLN(best, rest)
             rule,_= xp.xpln(data,best,rest)
+
             if rule != -1:
                 betters, _ = data.betters(len(best.rows))
                 top_table['top']['data'].append(DATA(data,betters))
                 top_table['xpln1']['data'].append(DATA(data,selects(rule,data.rows)))
-                top_table['xpln2']['data'].append(DATA(data,selects(rule,data.rows)))
+                top_table['xpln2']['data'].append(DATA(data2,best_xpln2))
+                top_table['xpln3']['data'].append(DATA(data2,best_xpln3))
+                top_table['xpln4']['data'].append(DATA(data2,best_xpln4))
                 top_table['all']['data'].append(data)
                 top_table['sway1']['data'].append(best)
-                top_table['sway2']['data'].append(best)
+                top_table['sway2']['data'].append(best2)
+                top_table['sway3']['data'].append(best3)
+                top_table['sway4']['data'].append(best4)
                 top_table['all']['evals'] += 0
                 top_table['sway1']['evals'] += evals
-                top_table['sway2']['evals'] += evals
+                top_table['sway2']['evals'] += evals2
+                top_table['sway3']['evals'] += evals3
+                top_table['sway4']['evals'] += evals4
                 top_table['xpln1']['evals'] += evals
-                top_table['xpln2']['evals'] += evals
+                top_table['xpln2']['evals'] += evals2
+                top_table['xpln3']['evals'] += evals3
+                top_table['xpln4']['evals'] += evals4
                 top_table['top']['evals'] += len(data.rows)
                 
                 for i in range(len(bottom_table)):
@@ -57,9 +83,19 @@ def main():
             headers = [y.txt for y in data.cols.y]
             table = []
 
+            top_table['sway1'] = top_table.pop('sway1')
+            top_table['sway2 (pca)'] = top_table.pop('sway2')
+            top_table['sway3 (agglo)'] = top_table.pop('sway3')
+            top_table['sway4 (kmeans)'] = top_table.pop('sway4')
+            top_table['xpln1'] = top_table.pop('xpln1')
+            top_table['xpln2 (pca+kdtree)'] = top_table.pop('xpln2')
+            top_table['xpln3 (agglo+kdtree)'] = top_table.pop('xpln3')
+            top_table['xpln4 (kmeans+kdtree)'] = top_table.pop('xpln4')
+            top_table['top'] = top_table.pop('top')
+
             for k,v in top_table.items():
                 stats = [k] + [stats_average(v['data'])[y] for y in headers]
-                stats += [v['evals']/the['n_iter']]
+                stats += [int(v['evals']/the['n_iter'])]
                 table.append(stats)
             
             print(tabulate(table, headers=headers+["n_evals avg"],numalign="right"))

@@ -1,12 +1,24 @@
-         Lbs-    Acc+    Mpg+    n_evals avg
------  ------  ------  ------  -------------
-all      2800    15.5      20              0
-sway1    2126   16.62    32.5              6
-xpln1  2293.1   16.25      28              6
-top      1985    18.8      40            398
+                          Lbs-    Acc+    Mpg+    n_evals avg
+---------------------  -------  ------  ------  -------------
+all                       2800    15.5      20              0
+sway1                     2252      16      30              2
+sway2 (pca)               2223      16      30              1
+sway3 (agglo)             2395      16      30              1
+sway4 (kmeans)            2310      16      30              1
+xpln1                  2268.35  16.055      30              2
+xpln2 (pca+kdtree)      2216.9      16      30              1
+xpln3 (agglo+kdtree)      2375      16      30              1
+xpln4 (kmeans+kdtree)     2300      16      30              1
+top                       2226    16.5      30            398
                 Lbs-    Acc+    Mpg+
 --------------  ------  ------  ------
 all to all      =       =       =
 all to sway1    ≠       ≠       ≠
+sway1 to sway2  ≠       ≠       ≠
+sway1 to sway3  ≠       ≠       ≠
+sway1 to sway4  ≠       ≠       ≠
 sway1 to xpln1  ≠       ≠       ≠
+sway2 to xpln2  ≠       ≠       ≠
+sway3 to xpln3  ≠       ≠       ≠
+sway4 to xpln4  ≠       ≠       ≠
 sway1 to top    ≠       ≠       ≠

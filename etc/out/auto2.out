@@ -1,16 +1,24 @@
-         CityMPG+    HighwayMPG+    Weight-    Class-    n_evals avg
------  ----------  -------------  ---------  --------  -------------
-all            21             28       3040      17.7              0
-sway1       29.55          34.65    2175.75     9.265              5
-sway2       29.55          34.65    2175.75     9.265              5
-xpln1        28.2          32.85    2398.25    10.645              5
-xpln2        28.2          32.85    2398.25    10.645              5
-top            33             40     2052.5       8.9             93
+                         CityMPG+    HighwayMPG+    Weight-    Class-    n_evals avg
+---------------------  ----------  -------------  ---------  --------  -------------
+all                            21             28       3040      17.7              0
+sway1                        28.2           33.2    2382.25    11.235              5
+sway2 (pca)                  30.5          35.25     2047.5      8.75              4
+sway3 (agglo)                  39             43       1965       8.6              4
+sway4 (kmeans)                 31             37       2055         9              3
+xpln1                        27.2           32.3     2464.5     11.07              5
+xpln2 (pca+kdtree)           30.4           35.5     2113.5      9.07              4
+xpln3 (agglo+kdtree)        30.25           34.8     2072.5      8.93              4
+xpln4 (kmeans+kdtree)        30.8             36       2149      9.14              3
+top                            33           39.4       2051      8.84             93
                 CityMPG+    HighwayMPG+    Weight-    Class-
 --------------  ----------  -------------  ---------  --------
 all to all      =           =              =          =
 all to sway1    ≠           ≠              ≠          ≠
-sway1 to sway2  =           =              =          =
+sway1 to sway2  ≠           ≠              ≠          ≠
+sway1 to sway3  ≠           ≠              ≠          ≠
+sway1 to sway4  ≠           ≠              ≠          ≠
 sway1 to xpln1  ≠           ≠              ≠          ≠
 sway2 to xpln2  ≠           ≠              ≠          ≠
+sway3 to xpln3  ≠           ≠              ≠          ≠
+sway4 to xpln4  ≠           ≠              ≠          ≠
 sway1 to top    ≠           ≠              ≠          ≠

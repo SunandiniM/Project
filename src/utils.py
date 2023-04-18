@@ -5,7 +5,11 @@ from sym import SYM
 from operator import itemgetter
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import LabelEncoder
+from hyperopt import hp, fmin, tpe, Trials, STATUS_OK, space_eval
+import itertools, random
 
+random.seed(the['seed'])
 class Random:
     def __init__(self):
         self.seed = the['seed']
@@ -284,12 +288,124 @@ def stats_average(data_array):
         res[k] /= the['n_iter']
     return res
 
-def impute_missing_values(file, DATA):
+def preprocess_data(file, DATA):
     df = pd.read_csv(file)
+    df = impute_missing_values(df)
+    label_encoding(df)
+    file = file.replace('.csv', '_preprocessed.csv')
+    df.to_csv(file, index=False)
+    return DATA(file)
+
+def impute_missing_values(df):
+    for i in df.columns[df.isnull().any(axis=0)]:
+        df[i].fillna(df[i].mean(),inplace=True)
     for col in df.columns[df.eq('?').any()]:
         df[col] =df[col].replace('?', np.nan)
         df[col] = df[col].astype(float)
         df[col] = df[col].fillna(df[col].mean())
-    file = file.replace('.csv', '_imputed.csv')
-    df.to_csv(file, index=False)
-    return DATA(file)
+    return df
+
+def label_encoding(df):
+    syms = [col for col in df.columns if col.strip()[0].islower() and df[col].dtypes == 'O']
+    le = LabelEncoder()
+    for sym in syms:
+        col = le.fit_transform(df[sym])
+        df[sym] = col.copy()
+
+def better_dicts(dict1, dict2, data):
+    s1, s2, ys, x, y = 0, 0, data.cols.y, None, None
+
+    for col in ys:
+        x = dict1.get(col.txt)
+        y = dict2.get(col.txt)
+        x = col.norm(x)
+        y = col.norm(y)
+        s1 = s1 - math.exp(col.w * (x - y) / len(ys))
+        s2 = s2 - math.exp(col.w * (y - x) / len(ys))
+
+    return s1 / len(ys) < s2 / len(ys)
+
+def hpo_minimal_sampling_params(DATA, XPLN, selects, showRule):
+    most_optimial_sway_hps = []
+    least_sway_evals = -1
+    least_xpln_evals = -1
+    best_sway = ""
+    best_xpln = ""
+    
+    combs = list(itertools.product(*hp_grid.values()))
+    all_hp_combs = []
+    for params in combs:
+        all_hp_combs.append(dict(zip(hp_grid.keys(), params)))
+    hp_combs_sample = random.sample(all_hp_combs, hpo_minimal_sampling_samples)
+                           
+    for hps in hp_combs_sample:
+        the.update(hps)
+        data=DATA(the["file"]) 
+        best,rest, evals = data.sway() 
+        xp = XPLN(best, rest)
+        rule,_= xp.xpln(data,best,rest)
+        data1= DATA(data,selects(rule,data.rows))
+        current_sway =  best.stats(best.cols.y, 2, 'mid')
+        top,_ = data.betters(len(best.rows))
+        top = data.clone(top)
+
+        if(best_xpln == ""):
+            best_xpln = data1.stats(data1.cols.y, 2, 'mid')
+            best_sway = best.stats(best.cols.y, 2, 'mid')
+            most_optimial_sway_hps = hps
+            least_sway_evals = evals
+            least_xpln_evals = evals
+        else:
+            if better_dicts(current_sway, best_sway, data):
+                best_sway = current_sway
+                most_optimial_sway_hps = hps
+                least_sway_evals = evals
+    the.update(most_optimial_sway_hps)
+    print('--------------- HPO Minimal Sampling Results ---------------')
+    print('Best Params: ', most_optimial_sway_hps)
+    print("\n-----------\nexplain=", showRule(rule))
+    print("all               ",data.stats(data.cols.y, 2, 'mid'))
+    print("sway with",least_sway_evals,"evals",best_sway)
+    print("xpln on",least_xpln_evals,"evals",best_xpln)
+    print("sort with",len(data.rows),"evals",top.stats(top.cols.y, 2, 'mid'))
+
+def hpo_hyperopt_params(DATA, XPLN, selects, showRule):
+    def hyperopt_objective(params):
+        current_sway = {}
+        current_xpln = {}
+        top = {}
+        sum = 0
+        the.update(params)
+        data=DATA(the["file"]) 
+        best,rest, evals = data.sway() 
+        xp = XPLN(best, rest)
+        rule,_= xp.xpln(data,best,rest)
+        if rule != -1:
+            data1= DATA(data,selects(rule,data.rows))
+            current_sway =  best.stats(best.cols.y, 2, 'mid')
+            current_xpln = data1.stats(data1.cols.y, 2, 'mid')
+            top,_ = data.betters(len(best.rows))
+            top = data.clone(top)
+            ys = data.cols.y
+            for col in ys:
+                x = current_sway.get(col.txt)
+                sum += x * col.w
+        return {"loss": sum, "status": STATUS_OK, "data": data, "evals": evals, "rule": rule, "sway": current_sway, "xpln": current_xpln, "top": top, "params": params}
+    
+    space = {}
+    trials = Trials()
+    for key in hp_grid.keys():
+        space[key] = hp.choice(key, hp_grid[key])
+    
+    best = fmin(hyperopt_objective, space, algo=tpe.suggest, max_evals=hpo_hyperopt_samples, trials=trials)
+    trial_loss = np.asarray(trials.losses(), dtype=float)
+    best_ind = np.argmin(trial_loss)
+    best_trial = trials.trials[best_ind]
+    print('--------------- HPO Hyperopt Results ---------------')
+    print('Best Params: ', best_trial['result']['params'])
+    print("\n-----------\nexplain=", showRule(best_trial['result']['rule']))
+    print("all               ",best_trial['result']['data'].stats(best_trial['result']['data'].cols.y, 2, 'mid'))
+    print("sway with",best_trial['result']['evals'],"evals",best_trial['result']['sway'])
+    print("xpln on",best_trial['result']['evals'],"evals",best_trial['result']['xpln'])
+    print("sort with",len(best_trial['result']['data'].rows),"evals",best_trial['result']['top'].stats(best_trial['result']['top'].cols.y, 2, 'mid'))
+    print()
