@@ -10,7 +10,8 @@ the = {
     'cohen':.35,
     'Fmt': "{:.2f}", 
     'width':40,
-    'n_iter': 20
+    'n_iter': 20,
+    'significance_level': 5
 }
 
 help = '''USAGE: python main.py  [OPTIONS] [-g ACTION]

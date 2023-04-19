@@ -20,8 +20,8 @@ def main():
     if the['help'] == True:
         print(help)
     else:
-        hpo_minimal_sampling_params(DATA, XPLN, selects, showRule)
-        hpo_hyperopt_params(DATA, XPLN, selects, showRule)
+        # hpo_minimal_sampling_params(DATA, XPLN, selects, showRule)
+        # hpo_hyperopt_params(DATA, XPLN, selects, showRule)
 
         count = 0
         while count < the['n_iter']:
@@ -94,9 +94,16 @@ def main():
             top_table['top'] = top_table.pop('top')
 
             for k,v in top_table.items():
-                stats = [k] + [stats_average(v['data'])[y] for y in headers]
+                v['avg'] = stats_average(v['data'])
+                stats = [k] + [v['avg'][y] for y in headers]
                 stats += [int(v['evals']/the['n_iter'])]
                 table.append(stats)
+            
+            mwu_sways, kw_sways, mwu_xplns, kw_xplns = run_stats(data2, top_table)
+            table.append(['Mann-Whitney U Sways'] + mwu_sways)
+            table.append(['Kruskal-Wallis Sways'] + kw_sways)
+            table.append(['Mann-Whitney U Xplns'] + mwu_xplns)
+            table.append(['Kruskal-Wallis Xplns'] + kw_xplns)
             
             print(tabulate(table, headers=headers+["n_evals avg"],numalign="right"))
             print()

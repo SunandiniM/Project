@@ -108,32 +108,6 @@ class DATA:
             return True
         else:
             return False
-        
-    def better_hypervolume(self, row1, row2):
-        s1, s2, ys = 0, 0, self.cols.y
-        data = [[], []]
-        ref_point = []
-        for col in ys:
-            x = col.norm(row1.cells[col.at])
-            y = col.norm(row2.cells[col.at])
-            if '-' in col.txt:
-                x = -x
-                y = -y
-                ref_point.append(1)
-            else:
-                ref_point.append(2)
-            data[0].append(x)
-            data[1].append(y)
-        if len(ref_point) < 2:
-            return data[0] > data[1]
-        # print(data)
-        # print(ref_point)
-
-        hv = hypervolume(data)
-        output = hv.contributions(ref_point)
-        hv1, hv2 = output[0], output[1]
-
-        return hv1 < hv2
     
     def tree(self, rows = None , min = None, cols = None, above = None):
         rows = rows or self.rows

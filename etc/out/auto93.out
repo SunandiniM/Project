@@ -1,15 +1,19 @@
-                          Lbs-    Acc+    Mpg+    n_evals avg
----------------------  -------  ------  ------  -------------
-all                       2800    15.5      20              0
-sway1                     2252      16      30              2
-sway2 (pca)               2223      16      30              1
-sway3 (agglo)             2395      16      30              1
-sway4 (kmeans)            2310      16      30              1
-xpln1                  2268.35  16.055      30              2
-xpln2 (pca+kdtree)      2216.9      16      30              1
-xpln3 (agglo+kdtree)      2375      16      30              1
-xpln4 (kmeans+kdtree)     2300      16      30              1
-top                       2226    16.5      30            398
+                       Lbs-       Acc+                Mpg+         n_evals avg
+---------------------  ---------  ------------------  ---------  -------------
+all                    2800.0     15.5                20.0                   0
+sway1                  2170.75    16.345000000000002  30.5                   6
+sway2 (pca)            1917.25    16.904999999999998  30.0                   5
+sway3 (agglo)          1833.0     17.245000000000005  30.0                   4
+sway4 (kmeans)         2290.0     15.5                30.0                   5
+xpln1                  2289.95    16.07               28.5                   6
+xpln2 (pca+kdtree)     1965.1     17.025              30.0                   5
+xpln3 (agglo+kdtree)   1869.8     16.860000000000003  30.0                   4
+xpln4 (kmeans+kdtree)  2282.6     15.934999999999999  30.0                   5
+top                    1985.0     18.78000000000001   40.0                 398
+Mann-Whitney U Sways   ['sway3']  ['sway3']           ['sway1']
+Kruskal-Wallis Sways   ['sway3']  ['sway3']           ['sway1']
+Mann-Whitney U Xplns   ['xpln3']  ['xpln2']           ['xpln2']
+Kruskal-Wallis Xplns   ['xpln3']  ['xpln2']           ['xpln2']
                 Lbs-    Acc+    Mpg+
 --------------  ------  ------  ------
 all to all      =       =       =
