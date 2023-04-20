@@ -35,9 +35,6 @@ def per(t, p):
     p = math.floor(((p or 0.5) * len(t)) + 0.5)
     return t[max(0, min(len(t), p) - 1)]
 
-def settings(s):
-    return dict(re.findall("\n[\s]+[-][\S]+[\s]+[-][-]([\S]+)[^\n]+= ([\S]+)",s))
-
 def coerce(s):
     bool_s = s.lower()
     for t in [int, float]:
@@ -48,6 +45,9 @@ def coerce(s):
     if bool_s in ["true", "false"]:
         return bool_s == "true"
     return s
+
+def settings(s):
+    return dict(re.findall("\n[\s]+[-][\S]+[\s]+[-][-]([\S]+)[^\n]+= ([\S]+)",s))
 
 def cli(options):
     args = sys.argv[1:]
