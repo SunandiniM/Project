@@ -1,19 +1,31 @@
-                       Lbs-       Acc+                Mpg+         n_evals avg
----------------------  ---------  ------------------  ---------  -------------
-all                    2800.0     15.5                20.0                   0
-sway1                  2170.75    16.345000000000002  30.5                   6
-sway2 (pca)            1917.25    16.904999999999998  30.0                   5
-sway3 (agglo)          1833.0     17.245000000000005  30.0                   4
-sway4 (kmeans)         2290.0     15.5                30.0                   5
-xpln1                  2289.95    16.07               28.5                   6
-xpln2 (pca+kdtree)     1965.1     17.025              30.0                   5
-xpln3 (agglo+kdtree)   1869.8     16.860000000000003  30.0                   4
-xpln4 (kmeans+kdtree)  2282.6     15.934999999999999  30.0                   5
-top                    1985.0     18.78000000000001   40.0                 398
-Mann-Whitney U Sways   ['sway3']  ['sway3']           ['sway1']
-Kruskal-Wallis Sways   ['sway3']  ['sway3']           ['sway1']
-Mann-Whitney U Xplns   ['xpln3']  ['xpln2']           ['xpln2']
-Kruskal-Wallis Xplns   ['xpln3']  ['xpln2']           ['xpln2']
+MWU and KW significance level:  0.05
+                       Lbs-                    Acc+                   Mpg+                      n_evals avg
+---------------------  ----------------------  ---------------------  ----------------------  -------------
+all                    2800.0                  15.5                   20.0                                0
+sway1                  2170.75                 16.35                  30.5                                6
+sway2 (pca)            1917.25                 16.9                   30.0                                5
+sway3 (agglo)          1833.0                  17.25                  30.0                                4
+sway4 (kmeans)         2290.0                  15.5                   30.0                                5
+xpln1                  2289.95                 16.07                  28.5                                6
+xpln2 (pca+kdtree)     1965.1                  17.02                  30.0                                5
+xpln3 (agglo+kdtree)   1869.8                  16.86                  30.0                                4
+xpln4 (kmeans+kdtree)  2282.6                  15.93                  30.0                                5
+top                    1985.0                  18.78                  40.0                              398
+samp tax1              629.25                  -0.85                  -10.5
+xpln tax1              -119.2                  0.28                   2.0
+samp tax2              882.75                  -1.4                   -10.0
+xpln tax2              -47.85                  -0.12                  0.0
+samp tax3              967.0                   -1.75                  -10.0
+xpln tax3              -36.8                   0.39                   0.0
+samp tax4              510.0                   0.0                    -10.0
+xpln tax4              7.4                     -0.43                  0.0
+KW Sway p-vals         1.4465012564291071e-11  0.0025149898385557496  1.6095425611579472e-06
+KW Xpln p-vals         7.067556323655087e-13   3.700703917812087e-05  7.558651727137877e-05
+Mann-Whitney U Sways   ['sway3']               ['sway3']              ['sway1']
+Kruskal-Wallis Sways   ['sway3']               ['sway3']              ['sway1']
+Mann-Whitney U Xplns   ['xpln3']               ['xpln2']              ['xpln2']
+Kruskal-Wallis Xplns   ['xpln3']               ['xpln2']              ['xpln2']
+
                 Lbs-    Acc+    Mpg+
 --------------  ------  ------  ------
 all to all      =       =       =

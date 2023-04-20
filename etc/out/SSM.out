@@ -1,0 +1,39 @@
+MWU and KW significance level:  0.05
+                       NUMBERITERATIONS-        TIMETOSOLUTION-           n_evals avg
+---------------------  -----------------------  ----------------------  -------------
+all                    6.8                      134.1                               0
+sway1                  5.7                      120.55                             10
+sway2 (pca)            5.3                      87.66                               9
+sway3 (agglo)          4.3                      85.66                               9
+sway4 (kmeans)         5.0                      60.51                              13
+xpln1                  5.9                      116.42                             10
+xpln2 (pca+kdtree)     5.65                     94.95                               9
+xpln3 (agglo+kdtree)   5.55                     95.01                               9
+xpln4 (kmeans+kdtree)  5.6                      78.55                              13
+top                    4.0                      59.99                          239360
+samp tax1              1.1                      13.55
+xpln tax1              -0.2                     4.13
+samp tax2              1.5                      46.44
+xpln tax2              -0.35                    -7.29
+samp tax3              1.5                      46.44
+xpln tax3              -0.25                    -7.35
+samp tax4              1.8                      73.59
+xpln tax4              -0.6                     -18.04
+KW Sway p-vals         6.334323738249815e-81    8.654525316325545e-223
+KW Xpln p-vals         5.2670091466318137e-135  0.0
+Mann-Whitney U Sways   ['sway3']                ['sway4']
+Kruskal-Wallis Sways   ['sway3']                ['sway4']
+Mann-Whitney U Xplns   ['xpln3']                ['xpln4']
+Kruskal-Wallis Xplns   ['xpln3']                ['xpln4']
+                NUMBERITERATIONS-    TIMETOSOLUTION-
+--------------  -------------------  -----------------
+all to all      =                    =
+all to sway1    ≠                    ≠
+sway1 to sway2  ≠                    ≠
+sway1 to sway3  ≠                    ≠
+sway1 to sway4  ≠                    ≠
+sway1 to xpln1  ≠                    ≠
+sway2 to xpln2  ≠                    ≠
+sway3 to xpln3  ≠                    ≠
+sway4 to xpln4  ≠                    ≠
+sway1 to top    ≠                    ≠

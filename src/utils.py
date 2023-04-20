@@ -281,14 +281,16 @@ def prune(rule, maxSize):
     if n > 0:
         return rule
     
-def stats_average(data_array):
-    res = {}
-    for x in data_array:
-        for k,v in x.stats().items():
-            res[k] = res.get(k,0) + v
-    for k,v in res.items():
-        res[k] /= the['n_iter']
-    return res
+def get_avgs_from_data_list(data_obj_list):
+    avgs = {}
+    # For each data_obj, get sum of mid/mode
+    for data_obj in data_obj_list:
+        for k,v in data_obj.stats().items():
+            avgs[k] = avgs.get(k,0) + v
+    # Convert sums to averages
+    for k,v in avgs.items():
+        avgs[k] = round(avgs[k]/the['n_iter'], 2)
+    return avgs
 
 def preprocess_data(file, DATA):
     df = pd.read_csv(file)
@@ -338,7 +340,7 @@ def hpo_minimal_sampling_params(DATA, XPLN, selects, showRule):
     all_hp_combs = []
     for params in combs:
         all_hp_combs.append(dict(zip(hp_grid.keys(), params)))
-    hp_combs_sample = random.sample(all_hp_combs, hpo_minimal_sampling_samples)
+    hp_combs_sample = random.sample(all_hp_combs, the['hpo_minimal_sampling_samples'])
                            
     for hps in hp_combs_sample:
         the.update(hps)
@@ -399,7 +401,7 @@ def hpo_hyperopt_params(DATA, XPLN, selects, showRule):
     for key in hp_grid.keys():
         space[key] = hp.choice(key, hp_grid[key])
     
-    best = fmin(hyperopt_objective, space, algo=tpe.suggest, max_evals=hpo_hyperopt_samples, trials=trials)
+    best = fmin(hyperopt_objective, space, algo=tpe.suggest, max_evals=the['hpo_hyperopt_samples'], trials=trials)
     trial_loss = np.asarray(trials.losses(), dtype=float)
     best_ind = np.argmin(trial_loss)
     best_trial = trials.trials[best_ind]
@@ -414,6 +416,7 @@ def hpo_hyperopt_params(DATA, XPLN, selects, showRule):
 
 def run_stats(data, top_table):
     print('MWU and KW significance level: ', the['significance_level']/100)
+    all =  top_table['all']
     sway1 = top_table['sway1']
     sway2 = top_table['sway2 (pca)']
     sway3 = top_table['sway3 (agglo)']
@@ -422,8 +425,26 @@ def run_stats(data, top_table):
     mwu_sways = []
     kw_sways = []
 
+    xpln1 = top_table['xpln1']
+    xpln2 = top_table['xpln2 (pca+kdtree)']
+    xpln3 = top_table['xpln3 (agglo+kdtree)']
+    xpln4 = top_table['xpln4 (kmeans+kdtree)']
+    xplns = ['xpln1', 'xpln2', 'xpln3', 'xpln4']
+    mwu_xplns = []
+    kw_xplns = []
+
+    kw_sway_p_values = []
+    kw_xpln_p_values = []
+
+    taxes = {'samp tax1': [], 'xpln tax1': [], 'samp tax2': [], 'xpln tax2': [], 'samp tax3': [], 'xpln tax3': [], 'samp tax4': [], 'xpln tax4': []}
+
     for col in data.cols.y:
         sway_avgs = [sway1['avg'][col.txt], sway2['avg'][col.txt], sway3['avg'][col.txt], sway4['avg'][col.txt]]
+        xpln_avgs = [xpln1['avg'][col.txt], xpln2['avg'][col.txt], xpln3['avg'][col.txt], xpln4['avg'][col.txt]]
+
+        for idx in range(len(xpln_avgs)):
+            taxes['samp tax' + str(idx + 1)].append(round(all['avg'][col.txt] - sway_avgs[idx], 2))
+            taxes['xpln tax'  + str(idx + 1)].append(round(sway_avgs[idx] - xpln_avgs[idx], 2))
 
         if col.w == -1:
             best_avg = min(sway_avgs)
@@ -440,7 +461,8 @@ def run_stats(data, top_table):
         for best in sway4['data']:
             sway4_col = [row.cells[col.at] for row in best.rows]
 
-        # _, p_value = kruskal(sway1_col, sway2_col, sway3_col, sway4_col)
+        _, p_value_sways = kruskal(sway1_col, sway2_col, sway3_col, sway4_col)
+        kw_sway_p_values.append(p_value_sways/100)
         # if p_value < the['kw_significance']:
         #     top_table['kw_significant'].append('yes')
         # else:
@@ -489,18 +511,8 @@ def run_stats(data, top_table):
         else:
             kw_sways.append(list(kw_sig))
 
-    
-    xpln1 = top_table['xpln1']
-    xpln2 = top_table['xpln2 (pca+kdtree)']
-    xpln3 = top_table['xpln3 (agglo+kdtree)']
-    xpln4 = top_table['xpln4 (kmeans+kdtree)']
-    xplns = ['xpln1', 'xpln2', 'xpln3', 'xpln4']
-    mwu_xplns = []
-    kw_xplns = []
-
     for col in data.cols.y:
         xpln_avgs = [xpln1['avg'][col.txt], xpln2['avg'][col.txt], xpln3['avg'][col.txt], xpln4['avg'][col.txt]]
-
         if col.w == -1:
             best_avg = min(xpln_avgs)
         else:
@@ -508,14 +520,20 @@ def run_stats(data, top_table):
         best_xpln = xplns[xpln_avgs.index(best_avg)]
 
         for best in xpln1['data']:
-            xpln1_col = [row.cells[col.at] for row in best.rows]
+            if best.rows:
+                xpln1_col = [row.cells[col.at] for row in best.rows]
         for best in xpln2['data']:
-            xpln2_col = [row.cells[col.at] for row in best.rows]
+            if best.rows:
+                xpln2_col = [row.cells[col.at] for row in best.rows]
         for best in xpln3['data']:
-            xpln3_col = [row.cells[col.at] for row in best.rows]
+            if best.rows:
+                xpln3_col = [row.cells[col.at] for row in best.rows]
         for best in xpln4['data']:
-            xpln4_col = [row.cells[col.at] for row in best.rows]
+            if best.rows:
+                xpln4_col = [row.cells[col.at] for row in best.rows]
         
+        _, p_value_xplns = kruskal(xpln1_col, xpln2_col, xpln3_col, xpln4_col)
+        kw_xpln_p_values.append(p_value_xplns/100)
         groups = [xpln1_col, xpln2_col, xpln3_col, xpln4_col]
         num_groups = len(groups)
         p_values_mwu = np.zeros((num_groups, num_groups))
@@ -546,4 +564,4 @@ def run_stats(data, top_table):
         else:
             kw_xplns.append(list(kw_sig))
 
-    return mwu_sways, kw_sways, mwu_xplns, kw_xplns
+    return mwu_sways, kw_sways, mwu_xplns, kw_xplns, taxes, kw_sway_p_values, kw_xpln_p_values

@@ -1,0 +1,40 @@
+MWU and KW significance level:  0.05
+                       LOC+                    AEXP-                 PLEX-                  RISK-                  EFFORT-                   n_evals avg
+---------------------  ----------------------  --------------------  ---------------------  ---------------------  ----------------------  -------------
+all                    1061.6                  3.0                   3.0                    4.95                   19631.9                             0
+sway1                  1060.25                 2.9                   2.85                   4.35                   19987.55                            6
+sway2 (pca)            1211.75                 2.7                   2.95                   5.4                    34498.4                             5
+sway3 (agglo)          1476.15                 2.55                  2.3                    8.0                    63545.45                            4
+sway4 (kmeans)         1559.0                  2.0                   3.0                    11.0                   86806.0                             4
+xpln1                  1056.95                 3.0                   3.0                    5.1                    19945.15                            6
+xpln2 (pca+kdtree)     1098.2                  2.95                  3.0                    5.4                    27945.85                            5
+xpln3 (agglo+kdtree)   1157.05                 3.0                   3.0                    6.65                   34305.75                            4
+xpln4 (kmeans+kdtree)  1175.7                  3.0                   3.0                    7.85                   38838.9                             4
+top                    1534.7                  2.0                   1.0                    3.15                   29972.0                          1000
+samp tax1              1.35                    0.1                   0.15                   0.6                    -355.65
+xpln tax1              3.3                     -0.1                  -0.15                  -0.75                  42.4
+samp tax2              -150.15                 0.3                   0.05                   -0.45                  -14866.5
+xpln tax2              113.55                  -0.25                 -0.05                  0.0                    6552.55
+samp tax3              -414.55                 0.45                  0.7                    -3.05                  -43913.55
+xpln tax3              319.1                   -0.45                 -0.7                   1.35                   29239.7
+samp tax4              -497.4                  1.0                   0.0                    -6.05                  -67174.1
+xpln tax4              383.3                   -1.0                  0.0                    3.15                   47967.1
+KW Sway p-vals         2.2710461183692822e-05  0.006712903367310301  5.380376499220954e-05  0.005252382381563827   1.8018164739797052e-20
+KW Xpln p-vals         6.434227695971921e-05   0.008668418769825895  0.0018103147385666377  0.0003973792464556449  4.067552189751709e-07
+Mann-Whitney U Sways   ['sway4']               ['sway4']             ['sway3']              ['sway1']              ['sway1']
+Kruskal-Wallis Sways   ['sway4']               ['sway4']             ['sway3']              ['sway1']              ['sway1']
+Mann-Whitney U Xplns   ['xpln4']               ['xpln2']             ['xpln1']              ['xpln1']              ['xpln1']
+Kruskal-Wallis Xplns   ['xpln4']               ['xpln2']             ['xpln1']              ['xpln1']              ['xpln1']
+
+                LOC+    AEXP-    PLEX-    RISK-    EFFORT-
+--------------  ------  -------  -------  -------  ---------
+all to all      =       =        =        =        =
+all to sway1    ≠       ≠        ≠        ≠        ≠
+sway1 to sway2  ≠       ≠        ≠        ≠        ≠
+sway1 to sway3  ≠       ≠        ≠        ≠        ≠
+sway1 to sway4  ≠       ≠        ≠        ≠        ≠
+sway1 to xpln1  ≠       ≠        ≠        ≠        ≠
+sway2 to xpln2  ≠       ≠        ≠        ≠        ≠
+sway3 to xpln3  ≠       ≠        ≠        ≠        ≠
+sway4 to xpln4  ≠       ≠        ≠        ≠        ≠
+sway1 to top    ≠       ≠        ≠        ≠        ≠

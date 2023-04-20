@@ -1,12 +1,40 @@
-         N_effort-    n_evals avg
------  -----------  -------------
-all           2098              0
-sway1        427.4              6
-xpln1       885.65              6
-top          149.5            499
+MWU and KW significance level:  0.05
+                       N_effort-                 n_evals avg
+---------------------  ----------------------  -------------
+all                    2098.0                              0
+sway1                  557.8                               6
+sway2 (pca)            193.5                               5
+sway3 (agglo)          196.0                               7
+sway4 (kmeans)         145.0                               7
+xpln1                  895.15                              6
+xpln2 (pca+kdtree)     232.0                               5
+xpln3 (agglo+kdtree)   218.75                              7
+xpln4 (kmeans+kdtree)  223.25                              7
+top                    148.0                             499
+samp tax1              1540.2
+xpln tax1              -337.35
+samp tax2              1904.5
+xpln tax2              -38.5
+samp tax3              1902.0
+xpln tax3              -22.75
+samp tax4              1953.0
+xpln tax4              -78.25
+KW Sway p-vals         8.288357994009898e-07
+KW Xpln p-vals         1.6567047423239684e-21
+Mann-Whitney U Sways   ['sway4']
+Kruskal-Wallis Sways   ['sway4']
+Mann-Whitney U Xplns   ['xpln3']
+Kruskal-Wallis Xplns   ['xpln3']
+
                 N_effort-
 --------------  -----------
 all to all      =
 all to sway1    ≠
+sway1 to sway2  ≠
+sway1 to sway3  ≠
+sway1 to sway4  ≠
 sway1 to xpln1  ≠
+sway2 to xpln2  ≠
+sway3 to xpln3  ≠
+sway4 to xpln4  ≠
 sway1 to top    ≠

@@ -1,0 +1,40 @@
+MWU and KW significance level:  0.05
+                       Loc+                   Risk-                   Effort-                  n_evals avg
+---------------------  ---------------------  ----------------------  ---------------------  -------------
+all                    1001.05                5.2                     19884.05                           0
+sway1                  994.05                 2.6                     13607.1                            8
+sway2 (pca)            1489.4                 4.95                    34007.2                            7
+sway3 (agglo)          1520.6                 6.65                    53182.75                           7
+sway4 (kmeans)         1616.0                 12.0                    146753.0                           5
+xpln1                  1010.1                 4.85                    19311.3                            8
+xpln2 (pca+kdtree)     1057.8                 5.45                    21306.05                           7
+xpln3 (agglo+kdtree)   1047.45                6.35                    24833.15                           7
+xpln4 (kmeans+kdtree)  1084.25                7.95                    33004.5                            5
+top                    1959.0                 0.0                     17752.0                        10000
+samp tax1              7.0                    2.6                     6276.95
+xpln tax1              -16.05                 -2.25                   -5704.2
+samp tax2              -488.35                0.25                    -14123.15
+xpln tax2              431.6                  -0.5                    12701.15
+samp tax3              -519.55                -1.45                   -33298.7
+xpln tax3              473.15                 0.3                     28349.6
+samp tax4              -614.95                -6.8                    -126868.95
+xpln tax4              531.75                 4.05                    113748.5
+KW Sway p-vals         4.603718025010606e-13  3.4087296488154494e-20  7.594821658733136e-62
+KW Xpln p-vals         0.007162007891853644   1.167496773730508e-65   5.351456091215821e-39
+Mann-Whitney U Sways   ['sway4']              ['sway1']               ['sway1']
+Kruskal-Wallis Sways   ['sway4']              ['sway1']               ['sway1']
+Mann-Whitney U Xplns   ['xpln4']              ['xpln1']               ['xpln1']
+Kruskal-Wallis Xplns   ['xpln4']              ['xpln1']               ['xpln1']
+
+                Loc+    Risk-    Effort-
+--------------  ------  -------  ---------
+all to all      =       =        =
+all to sway1    ≠       ≠        ≠
+sway1 to sway2  ≠       ≠        ≠
+sway1 to sway3  ≠       ≠        ≠
+sway1 to sway4  ≠       ≠        ≠
+sway1 to xpln1  ≠       ≠        ≠
+sway2 to xpln2  ≠       ≠        ≠
+sway3 to xpln3  ≠       ≠        ≠
+sway4 to xpln4  ≠       ≠        ≠
+sway1 to top    ≠       ≠        ≠

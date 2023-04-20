@@ -11,7 +11,9 @@ the = {
     'Fmt': "{:.2f}", 
     'width':40,
     'n_iter': 20,
-    'significance_level': 5
+    'significance_level': 5,
+    'hpo_hyperopt_samples': 100,
+    'hpo_minimal_sampling_samples': 50
 }
 
 help = '''USAGE: python main.py  [OPTIONS] [-g ACTION]
@@ -34,8 +36,6 @@ OPTIONS:
     '''
 
 egs = {}
-
-n = 0
 
 top_table = {'all': {'data' : [], 'evals' : 0},
              'sway1': {'data' : [], 'evals' : 0},
@@ -68,6 +68,3 @@ hp_grid = {
     'p': [round(i, 3) for i in list(np.arange(0.5, 3, 0.25))],
     'rest': [round(i, 3) for i in list(np.arange(1, 10, 1))]
 }
-
-hpo_hyperopt_samples = 100
-hpo_minimal_sampling_samples = 50
