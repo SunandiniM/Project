@@ -3,6 +3,11 @@ from cols import COLS
 from utils import *
 from operator import itemgetter
 from functools import cmp_to_key
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
+import random
+
+random.seed(the['seed'])
 
 class DATA:
     def __init__(self, src = None, rows = None):
@@ -64,14 +69,45 @@ class DATA:
         evals = 1 if the['Reuse'] and above else 2
         return left, right, A, B, c, evals
     
-    def better(self,row1,row2):
-        s1,s2,ys = 0, 0, self.cols.y
+    def better(self, rows1, rows2, s1=0, s2=0, ys=None, x=0, y=0):
+        if isinstance(rows1, ROW):
+            rows1 = [rows1]
+            rows2 = [rows2]
+        if not ys:
+            ys = self.cols.y
         for col in ys:
-            x  = col.norm(row1.cells[col.at])
-            y  = col.norm(row2.cells[col.at])
-            s1 = s1 - math.exp(col.w * (x-y)/len(ys))
-            s2 = s2 - math.exp(col.w * (y-x)/len(ys))
-        return s1/len(ys) < s2/len(ys)
+            for row1, row2 in zip(rows1, rows2):
+                x = col.norm(row1.cells[col.at])
+                y = col.norm(row2.cells[col.at])
+                s1 = s1 - math.exp(col.w * (x - y) / len(ys))
+                s2 = s2 - math.exp(col.w * (y - x) / len(ys))
+        return s1 / len(ys) < s2 / len(ys)
+    
+    def bdom(self, rows1, rows2, ys=None):
+        if isinstance(rows1, ROW):
+            rows1 = [rows1]
+            rows2 = [rows2]
+        if not ys:
+            ys = self.cols.y
+        
+        dominates = False
+        for col in ys:
+            for row1, row2 in zip(rows1, rows2):
+                x = col.norm(row1.cells[col.at]) * col.w * -1
+                y = col.norm(row2.cells[col.at]) * col.w * -1
+                if x > y:
+                    return False
+                elif x < y:
+                    dominates = True
+        return dominates
+
+    def better_bdom(self, row1, row2, ys=None):
+        row1_bdom = self.bdom(row1, row2, ys=ys)
+        row2_bdom = self.bdom(row2, row1, ys=ys)
+        if row1_bdom and not row2_bdom:
+            return True
+        else:
+            return False
     
     def tree(self, rows = None , min = None, cols = None, above = None):
         rows = rows or self.rows
@@ -84,15 +120,30 @@ class DATA:
             node['right'] = self.tree(right, min, cols, node['B'])
         return node
     
-    def sway(self):
+    def sway(self, algo = 'half', better = 'zitler'):
         data = self
         def worker(rows, worse, evals0 = None, above = None):
             if len(rows) <= len(data.rows)**the['min']: 
                 return rows, many(worse, the['rest']*len(rows)), evals0
             else:
-                l,r,A,B,c,evals = self.half(rows, None, above)
-                if self.better(B,A):
-                    l,r,A,B = r,l,B,A
+                if algo == 'half':
+                    l,r,A,B,c,evals = self.half(rows, None, above)
+                elif algo == 'kmeans':
+                    l,r,A,B,evals = self.kmeans(rows)
+                elif algo == 'agglomerative_clustering':
+                    l,r,A,B,evals = self.agglomerative_clustering(rows)
+                elif algo == 'dbscan':
+                    l,r,A,B,evals = self.dbscan(rows)
+                elif algo == 'pca':
+                    l,r,A,B,evals = self.pca(rows)
+                
+                if better == 'zitler':
+                    if self.better(B,A):
+                        l,r,A,B = r,l,B,A
+                elif better == 'bdom':
+                    if self.better_bdom(B,A):
+                        l,r,A,B = r,l,B,A
+
                 for row in r:
                     worse.append(row)
                 return worker(l,worse,evals+evals0,A)
@@ -106,3 +157,83 @@ class DATA:
             return tmp
         else:
             return tmp[1:n], tmp[n+1:]
+    
+    def kmeans(self, rows=None):
+        left = []
+        right = []
+        A = None
+        B = None
+        
+        def min_dist(center, row, A):
+            if not A:
+                A = row
+            if self.dist(A, center) > self.dist(A, row):
+                return row
+            else:
+                return A
+    
+        if not rows:
+            rows = self.rows
+        row_set = np.array([r.cells for r in rows])
+        kmeans = KMeans(n_clusters=2, random_state=the['seed'], n_init=10)
+        kmeans.fit(row_set)
+        left_cluster = ROW(kmeans.cluster_centers_[0])
+        right_cluster = ROW(kmeans.cluster_centers_[1])
+
+        for key, value in enumerate(kmeans.labels_):
+            if value == 0:
+                A = min_dist(left_cluster, rows[key], A)
+                left.append(rows[key])
+            else:
+                B = min_dist(right_cluster, rows[key], B)
+                right.append(rows[key])
+
+        return left, right, A, B, 1
+    
+    def agglomerative_clustering(self, rows=None):
+        left = []
+        right = []
+
+        if not rows:
+            rows = self.rows
+        row_set = np.array([r.cells for r in rows])
+        agg_clust = AgglomerativeClustering(n_clusters=2, metric='euclidean', linkage='ward')
+        agg_clust.fit(row_set)
+
+        for key, value in enumerate(agg_clust.labels_):
+            if value == 0:
+                left.append(rows[key])
+            else:
+                right.append(rows[key])
+        return left, right, random.choices(left, k=10), random.choices(right, k=10), 1
+    
+    def dbscan(self, rows=None):
+        left = []
+        right = []
+
+        if not rows:
+            rows = self.rows
+        row_set = np.array([r.cells for r in rows])
+        db = DBSCAN(eps = 3, min_samples = 2)
+        db.fit(row_set)
+
+        for key, value in enumerate(db.labels_):
+            if value == 0:
+                left.append(rows[key])
+            else:
+                right.append(rows[key])
+        return left, right, random.choices(left, k=10), random.choices(right, k=10), db.n_features_in_
+    
+    def pca(self, rows=None, cols=None, above=None):
+        if not rows:
+            rows = self.rows
+        row_set = np.array([r.cells for r in rows])
+        pca = PCA(n_components=1)
+        pcs = pca.fit_transform(row_set)
+        result = []
+        for i in sorted(enumerate(rows), key=lambda x: pcs[x[0]]):
+            result.append(i[1])
+        n = len(result)
+        left = result[:n//2]
+        right = result[n//2:]
+        return left, right, random.choices(left, k=10), random.choices(right, k=10), 1

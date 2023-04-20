@@ -5,7 +5,13 @@ from sym import SYM
 from operator import itemgetter
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import LabelEncoder
+from hyperopt import hp, fmin, tpe, Trials, STATUS_OK, space_eval
+import itertools, random
+from scipy.stats import kruskal, mannwhitneyu
+from statsmodels.stats.multitest import multipletests
 
+random.seed(the['seed'])
 class Random:
     def __init__(self):
         self.seed = the['seed']
@@ -275,21 +281,283 @@ def prune(rule, maxSize):
     if n > 0:
         return rule
     
-def stats_average(data_array):
-    res = {}
-    for x in data_array:
-        for k,v in x.stats().items():
-            res[k] = res.get(k,0) + v
-    for k,v in res.items():
-        res[k] /= the['n_iter']
-    return res
+def get_avgs_from_data_list(data_obj_list):
+    avgs = {}
+    # For each data_obj, get sum of mid/mode
+    for data_obj in data_obj_list:
+        for k,v in data_obj.stats().items():
+            avgs[k] = avgs.get(k,0) + v
+    # Convert sums to averages
+    for k,v in avgs.items():
+        avgs[k] = round(avgs[k]/the['n_iter'], 2)
+    return avgs
 
-def impute_missing_values(file, DATA):
+def preprocess_data(file, DATA):
     df = pd.read_csv(file)
+    df = impute_missing_values(df)
+    label_encoding(df)
+    file = file.replace('.csv', '_preprocessed.csv')
+    df.to_csv(file, index=False)
+    return DATA(file)
+
+def impute_missing_values(df):
+    for i in df.columns[df.isnull().any(axis=0)]:
+        df[i].fillna(df[i].mean(),inplace=True)
     for col in df.columns[df.eq('?').any()]:
         df[col] =df[col].replace('?', np.nan)
         df[col] = df[col].astype(float)
         df[col] = df[col].fillna(df[col].mean())
-    file = file.replace('.csv', '_imputed.csv')
-    df.to_csv(file, index=False)
-    return DATA(file)
+    return df
+
+def label_encoding(df):
+    syms = [col for col in df.columns if col.strip()[0].islower() and df[col].dtypes == 'O']
+    le = LabelEncoder()
+    for sym in syms:
+        col = le.fit_transform(df[sym])
+        df[sym] = col.copy()
+
+def better_dicts(dict1, dict2, data):
+    s1, s2, ys, x, y = 0, 0, data.cols.y, None, None
+
+    for col in ys:
+        x = dict1.get(col.txt)
+        y = dict2.get(col.txt)
+        x = col.norm(x)
+        y = col.norm(y)
+        s1 = s1 - math.exp(col.w * (x - y) / len(ys))
+        s2 = s2 - math.exp(col.w * (y - x) / len(ys))
+
+    return s1 / len(ys) < s2 / len(ys)
+
+def hpo_minimal_sampling_params(DATA, XPLN, selects, showRule):
+    most_optimial_sway_hps = []
+    least_sway_evals = -1
+    least_xpln_evals = -1
+    best_sway = ""
+    best_xpln = ""
+    
+    combs = list(itertools.product(*hp_grid.values()))
+    all_hp_combs = []
+    for params in combs:
+        all_hp_combs.append(dict(zip(hp_grid.keys(), params)))
+    hp_combs_sample = random.sample(all_hp_combs, the['hpo_minimal_sampling_samples'])
+                           
+    for hps in hp_combs_sample:
+        the.update(hps)
+        data=DATA(the["file"]) 
+        best,rest, evals = data.sway() 
+        xp = XPLN(best, rest)
+        rule,_= xp.xpln(data,best,rest)
+        data1= DATA(data,selects(rule,data.rows))
+        current_sway =  best.stats(best.cols.y, 2, 'mid')
+        top,_ = data.betters(len(best.rows))
+        top = data.clone(top)
+
+        if(best_xpln == ""):
+            best_xpln = data1.stats(data1.cols.y, 2, 'mid')
+            best_sway = best.stats(best.cols.y, 2, 'mid')
+            most_optimial_sway_hps = hps
+            least_sway_evals = evals
+            least_xpln_evals = evals
+        else:
+            if better_dicts(current_sway, best_sway, data):
+                best_sway = current_sway
+                most_optimial_sway_hps = hps
+                least_sway_evals = evals
+    the.update(most_optimial_sway_hps)
+    print('--------------- HPO Minimal Sampling Results ---------------')
+    print('Best Params: ', most_optimial_sway_hps)
+    print("\n-----------\nexplain=", showRule(rule))
+    print("all               ",data.stats(data.cols.y, 2, 'mid'))
+    print("sway with",least_sway_evals,"evals",best_sway)
+    print("xpln on",least_xpln_evals,"evals",best_xpln)
+    print("sort with",len(data.rows),"evals",top.stats(top.cols.y, 2, 'mid'))
+
+def hpo_hyperopt_params(DATA, XPLN, selects, showRule):
+    def hyperopt_objective(params):
+        current_sway = {}
+        current_xpln = {}
+        top = {}
+        sum = 0
+        the.update(params)
+        data=DATA(the["file"]) 
+        best,rest, evals = data.sway() 
+        xp = XPLN(best, rest)
+        rule,_= xp.xpln(data,best,rest)
+        if rule != -1:
+            data1= DATA(data,selects(rule,data.rows))
+            current_sway =  best.stats(best.cols.y, 2, 'mid')
+            current_xpln = data1.stats(data1.cols.y, 2, 'mid')
+            top,_ = data.betters(len(best.rows))
+            top = data.clone(top)
+            ys = data.cols.y
+            for col in ys:
+                x = current_sway.get(col.txt)
+                sum += x * col.w
+        return {"loss": sum, "status": STATUS_OK, "data": data, "evals": evals, "rule": rule, "sway": current_sway, "xpln": current_xpln, "top": top, "params": params}
+    
+    space = {}
+    trials = Trials()
+    for key in hp_grid.keys():
+        space[key] = hp.choice(key, hp_grid[key])
+    
+    best = fmin(hyperopt_objective, space, algo=tpe.suggest, max_evals=the['hpo_hyperopt_samples'], trials=trials)
+    trial_loss = np.asarray(trials.losses(), dtype=float)
+    best_ind = np.argmin(trial_loss)
+    best_trial = trials.trials[best_ind]
+    print('--------------- HPO Hyperopt Results ---------------')
+    print('Best Params: ', best_trial['result']['params'])
+    print("\n-----------\nexplain=", showRule(best_trial['result']['rule']))
+    print("all               ",best_trial['result']['data'].stats(best_trial['result']['data'].cols.y, 2, 'mid'))
+    print("sway with",best_trial['result']['evals'],"evals",best_trial['result']['sway'])
+    print("xpln on",best_trial['result']['evals'],"evals",best_trial['result']['xpln'])
+    print("sort with",len(best_trial['result']['data'].rows),"evals",best_trial['result']['top'].stats(best_trial['result']['top'].cols.y, 2, 'mid'))
+    print()
+
+def run_stats(data, top_table):
+    print('MWU and KW significance level: ', the['significance_level']/100)
+    all =  top_table['all']
+    sway1 = top_table['sway1']
+    sway2 = top_table['sway2 (pca)']
+    sway3 = top_table['sway3 (agglo)']
+    sway4 = top_table['sway4 (kmeans)']
+    sways = ['sway1', 'sway2', 'sway3', 'sway4']
+    mwu_sways = []
+    kw_sways = []
+
+    xpln1 = top_table['xpln1']
+    xpln2 = top_table['xpln2 (pca+kdtree)']
+    xpln3 = top_table['xpln3 (agglo+kdtree)']
+    xpln4 = top_table['xpln4 (kmeans+kdtree)']
+    xplns = ['xpln1', 'xpln2', 'xpln3', 'xpln4']
+    mwu_xplns = []
+    kw_xplns = []
+
+    kw_sway_p_values = []
+    kw_xpln_p_values = []
+
+    taxes = {'samp tax1': [], 'xpln tax1': [], 'samp tax2': [], 'xpln tax2': [], 'samp tax3': [], 'xpln tax3': [], 'samp tax4': [], 'xpln tax4': []}
+
+    for col in data.cols.y:
+        sway_avgs = [sway1['avg'][col.txt], sway2['avg'][col.txt], sway3['avg'][col.txt], sway4['avg'][col.txt]]
+        xpln_avgs = [xpln1['avg'][col.txt], xpln2['avg'][col.txt], xpln3['avg'][col.txt], xpln4['avg'][col.txt]]
+
+        for idx in range(len(xpln_avgs)):
+            taxes['samp tax' + str(idx + 1)].append(round(all['avg'][col.txt] - sway_avgs[idx], 2))
+            taxes['xpln tax'  + str(idx + 1)].append(round(sway_avgs[idx] - xpln_avgs[idx], 2))
+
+        if col.w == -1:
+            best_avg = min(sway_avgs)
+        else:
+            best_avg = max(sway_avgs)
+        best_sway = sways[sway_avgs.index(best_avg)]
+
+        for best in sway1['data']:
+            sway1_col = [row.cells[col.at] for row in best.rows]
+        for best in sway2['data']:
+            sway2_col = [row.cells[col.at] for row in best.rows]
+        for best in sway3['data']:
+            sway3_col = [row.cells[col.at] for row in best.rows]
+        for best in sway4['data']:
+            sway4_col = [row.cells[col.at] for row in best.rows]
+
+        _, p_value_sways = kruskal(sway1_col, sway2_col, sway3_col, sway4_col)
+        kw_sway_p_values.append(p_value_sways/100)
+        # if p_value < the['kw_significance']:
+        #     top_table['kw_significant'].append('yes')
+        # else:
+        #     top_table['kw_significant'].append('no')
+        
+        groups = [sway1_col, sway2_col, sway3_col, sway4_col]
+        num_groups = len(groups)
+        p_values_mwu = np.zeros((num_groups, num_groups))
+        p_values_kruskal = np.zeros((num_groups, num_groups))
+
+        for i in range(num_groups):
+            for j in range(i+1, num_groups):
+                _, p = mannwhitneyu(groups[i], groups[j], alternative='two-sided')
+                p_values_mwu[i, j] = p
+                p_values_mwu[j, i] = p
+                _, p_value_kruskal = kruskal(sway1_col, sway2_col, sway3_col, sway4_col)
+                p_values_kruskal[i, j] = p_value_kruskal
+                p_values_kruskal[j, i] = p_value_kruskal
+
+        # print('Pairwise Mann-Whitney U tests')
+        # print(pd.DataFrame(p_values_mwu, index=sways, columns=sways))
+        # print()
+
+        # Apply Bonferroni correction for multiple comparisons
+        adjusted_p_values = multipletests(p_values_mwu.ravel(), method='fdr_bh')[1].reshape(p_values_mwu.shape)
+        post_hoc = pd.DataFrame(adjusted_p_values, index=sways, columns=sways)
+
+        # print("Pairwise Mann-Whitney U tests with Benjamini/Hochberg correction:")
+        # print(post_hoc)
+        # print()
+
+        krusal_df = pd.DataFrame(p_values_kruskal, index=sways, columns=sways)
+        # print("Pairwise Kruskal Wallis:")
+        # print(krusal_df)
+        # print()
+
+        mwu_sig = set(post_hoc.iloc[list(np.where(post_hoc >= the['significance_level'])[0])].index)
+        if len(mwu_sig) == 0:
+            mwu_sways.append([best_sway])
+        else:
+            mwu_sways.append(list(mwu_sig))
+
+        kw_sig = set(krusal_df.iloc[list(np.where(krusal_df >= the['significance_level'])[0])].index)
+        if len(kw_sig) == 0:
+            kw_sways.append([best_sway])
+        else:
+            kw_sways.append(list(kw_sig))
+
+    for col in data.cols.y:
+        xpln_avgs = [xpln1['avg'][col.txt], xpln2['avg'][col.txt], xpln3['avg'][col.txt], xpln4['avg'][col.txt]]
+        if col.w == -1:
+            best_avg = min(xpln_avgs)
+        else:
+            best_avg = max(xpln_avgs)
+        best_xpln = xplns[xpln_avgs.index(best_avg)]
+
+        for best in xpln1['data']:
+            xpln1_col = [row.cells[col.at] for row in best.rows]
+        for best in xpln2['data']:
+            xpln2_col = [row.cells[col.at] for row in best.rows]
+        for best in xpln3['data']:
+            xpln3_col = [row.cells[col.at] for row in best.rows]
+        for best in xpln4['data']:
+            xpln4_col = [row.cells[col.at] for row in best.rows]
+        
+        _, p_value_xplns = kruskal(xpln1_col, xpln2_col, xpln3_col, xpln4_col)
+        kw_xpln_p_values.append(p_value_xplns/100)
+        groups = [xpln1_col, xpln2_col, xpln3_col, xpln4_col]
+        num_groups = len(groups)
+        p_values_mwu = np.zeros((num_groups, num_groups))
+        p_values_kruskal = np.zeros((num_groups, num_groups))
+
+        for i in range(num_groups):
+            for j in range(i+1, num_groups):
+                _, p = mannwhitneyu(groups[i], groups[j], alternative='two-sided')
+                p_values_mwu[i, j] = p
+                p_values_mwu[j, i] = p
+                _, p_value_kruskal = kruskal(xpln1_col, xpln2_col, xpln3_col, xpln4_col)
+                p_values_kruskal[i, j] = p_value_kruskal
+                p_values_kruskal[j, i] = p_value_kruskal
+
+        adjusted_p_values = multipletests(p_values_mwu.ravel(), method='fdr_bh')[1].reshape(p_values_mwu.shape)
+        post_hoc = pd.DataFrame(adjusted_p_values, index=xplns, columns=xplns)
+        krusal_df = pd.DataFrame(p_values_kruskal, index=xplns, columns=xplns)
+
+        mwu_sig = set(post_hoc.iloc[list(np.where(post_hoc >= the['significance_level'])[0])].index)
+        if len(mwu_sig) == 0:
+            mwu_xplns.append([best_xpln])
+        else:
+            mwu_xplns.append(list(mwu_sig))
+
+        kw_sig = set(krusal_df.iloc[list(np.where(krusal_df >= the['significance_level'])[0])].index)
+        if len(kw_sig) == 0:
+            kw_xplns.append([best_xpln])
+        else:
+            kw_xplns.append(list(kw_sig))
+
+    return mwu_sways, kw_sways, mwu_xplns, kw_xplns, taxes, kw_sway_p_values, kw_xpln_p_values

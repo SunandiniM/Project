@@ -1,16 +1,40 @@
-          MRE-      ACC+    PRED40+    n_evals avg
------  -------  --------  ---------  -------------
-all    119.305  -12.2235          0              0
-sway1    10.05    -0.049     74.997              8
-sway2    10.05    -0.049     74.997              8
-xpln1        0         0      83.33              8
-xpln2        0         0      83.33              8
-top          0         0      83.33          10000
+MWU and KW significance level:  0.05
+                       MRE-                   ACC+                   PRED40+                  n_evals avg
+---------------------  ---------------------  ---------------------  ---------------------  -------------
+all                    119.32                 -12.22                 0.0                                0
+sway1                  15.08                  -0.08                  70.83                              8
+sway2 (pca)            0.0                    0.0                    83.33                              7
+sway3 (agglo)          0.0                    0.0                    83.33                              7
+sway4 (kmeans)         0.0                    0.0                    83.33                              6
+xpln1                  0.0                    0.0                    83.33                              8
+xpln2 (pca+kdtree)     0.0                    0.0                    83.33                              7
+xpln3 (agglo+kdtree)   0.0                    0.0                    83.33                              7
+xpln4 (kmeans+kdtree)  0.0                    0.0                    83.33                              6
+top                    0.0                    0.0                    83.33                          10000
+samp tax1              104.24                 -12.14                 -70.83
+xpln tax1              15.08                  -0.08                  -12.5
+samp tax2              119.32                 -12.22                 -83.33
+xpln tax2              0.0                    0.0                    0.0
+samp tax3              119.32                 -12.22                 -83.33
+xpln tax3              0.0                    0.0                    0.0
+samp tax4              119.32                 -12.22                 -83.33
+xpln tax4              0.0                    0.0                    0.0
+KW Sway p-vals         7.220412830725307e-20  7.220412830725307e-20  6.276052551364232e-20
+KW Xpln p-vals         9.826183469845581e-05  9.944149078134571e-05  2.551570606171157e-06
+Mann-Whitney U Sways   ['sway2']              ['sway2']              ['sway2']
+Kruskal-Wallis Sways   ['sway2']              ['sway2']              ['sway2']
+Mann-Whitney U Xplns   ['xpln1']              ['xpln1']              ['xpln1']
+Kruskal-Wallis Xplns   ['xpln1']              ['xpln1']              ['xpln1']
+
                 MRE-    ACC+    PRED40+
 --------------  ------  ------  ---------
 all to all      =       =       =
 all to sway1    ≠       ≠       ≠
-sway1 to sway2  =       =       =
+sway1 to sway2  ≠       ≠       ≠
+sway1 to sway3  ≠       ≠       ≠
+sway1 to sway4  ≠       ≠       ≠
 sway1 to xpln1  ≠       ≠       ≠
 sway2 to xpln2  ≠       ≠       ≠
+sway3 to xpln3  ≠       ≠       ≠
+sway4 to xpln4  ≠       ≠       ≠
 sway1 to top    ≠       ≠       ≠

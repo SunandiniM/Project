@@ -3,6 +3,7 @@ from num import NUM
 from sym import SYM
 from data import DATA
 from xpln import *
+n = 0
 
 def test_the():
     print(the.__repr__())

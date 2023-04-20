@@ -4,7 +4,7 @@
 [![Language](https://img.shields.io/badge/Language-Python-orange.svg?style=flat)](https://github.com/NCSU-CSC-591-021-Spring-23-Group-3/Project/search?l=python)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://github.com/NCSU-CSC-591-021-Spring-23-Group-3/Project/blob/main/LICENSE)
 [![Tests](https://github.com/NCSU-CSC-591-021-Spring-23-Group-3/Project/actions/workflows/tests.yaml/badge.svg)](https://github.com/NCSU-CSC-591-021-Spring-23-Group-3/Project/actions/workflows/tests.yaml)
-[![codecov](https://codecov.io/gh/NCSU-CSC-591-021-Spring-23-Group-3/Project/branch/main/graph/badge.svg)](https://codecov.io/gh/NCSU-CSC-591-021-Spring-23-Group-3/Project/branch/main)
+[![codecov](https://codecov.io/gh/NCSU-CSC-591-021-Spring-23-Group-3/Homeworks/branch/main/graph/badge.svg)](https://codecov.io/gh/NCSU-CSC-591-021-Spring-23-Group-3/Project/branch/main)
 
 # About
 This repo is an extension of the [Homeworks](https://github.com/NCSU-CSC-591-021-Spring-23-Group-3/Homeworks) repo and contains the final project of CSC 591 021 Spring 23 <b>Group 3</b>.
