@@ -46,14 +46,14 @@ class NUM:
     def vals(self):
         return list(dict(sorted(self.has.items(), key=lambda x: x[1])).values())
 
+    def norm(self, n):
+        return n if n == '?' else (n - self.lo) / (self.hi - self.lo + 1e-32)
+
     def rnd(self, x, n):
         if x == '?':
             return x
         else:
             return rnd(x, n)
-
-    def norm(self, n):
-        return n if n == '?' else (n - self.lo) / (self.hi - self.lo + 1e-32)
 
     def dist(col, x, y):
         if x == "?" and y == "?":
