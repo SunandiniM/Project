@@ -81,7 +81,6 @@ def main():
                                 bottom_table[i][1][k] = '≠'
                 count += 1
         
-        # with open(the['file'].replace('/data', '/out').replace('.csv', '.out'), 'w') as outfile:
         headers = [y.txt for y in data.cols.y]
         table = []
 
