@@ -21,6 +21,12 @@ class DATA:
                 for row in rows:
                     self.add(row)
 
+    
+    def stats(self, cols = None, nPlaces = 2, what = 'mid'):
+        stats_dict = dict(sorted({col.txt: rnd(getattr(col, what)(), nPlaces) for col in cols or self.cols.y}.items()))
+        stats_dict["N"] = len(self.rows)
+        return stats_dict
+    
     def add(self, t):
         if self.cols:
             t = t if isinstance(t, ROW) else ROW(t)
@@ -28,11 +34,6 @@ class DATA:
             self.cols.add(t)
         else:
             self.cols=COLS(t)
-    
-    def stats(self, cols = None, nPlaces = 2, what = 'mid'):
-        stats_dict = dict(sorted({col.txt: rnd(getattr(col, what)(), nPlaces) for col in cols or self.cols.y}.items()))
-        stats_dict["N"] = len(self.rows)
-        return stats_dict
     
     def dist(self, row1, row2, cols = None):
         n,d = 0,0
