@@ -18,8 +18,6 @@ class NUM:
         if t:
             for n in t:
                 self.add(n)
-        else:
-            self.add(0)
 
     def add(self, n):
         if n != '?':

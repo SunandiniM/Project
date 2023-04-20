@@ -520,17 +520,13 @@ def run_stats(data, top_table):
         best_xpln = xplns[xpln_avgs.index(best_avg)]
 
         for best in xpln1['data']:
-            if best.rows:
-                xpln1_col = [row.cells[col.at] for row in best.rows]
+            xpln1_col = [row.cells[col.at] for row in best.rows]
         for best in xpln2['data']:
-            if best.rows:
-                xpln2_col = [row.cells[col.at] for row in best.rows]
+            xpln2_col = [row.cells[col.at] for row in best.rows]
         for best in xpln3['data']:
-            if best.rows:
-                xpln3_col = [row.cells[col.at] for row in best.rows]
+            xpln3_col = [row.cells[col.at] for row in best.rows]
         for best in xpln4['data']:
-            if best.rows:
-                xpln4_col = [row.cells[col.at] for row in best.rows]
+            xpln4_col = [row.cells[col.at] for row in best.rows]
         
         _, p_value_xplns = kruskal(xpln1_col, xpln2_col, xpln3_col, xpln4_col)
         kw_xpln_p_values.append(p_value_xplns/100)
