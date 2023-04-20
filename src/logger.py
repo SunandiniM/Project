@@ -13,3 +13,5 @@ class Logger:
     def flush(self):
         self.stream.flush()
         self.te.flush()
+        
+        
