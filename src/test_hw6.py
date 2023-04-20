@@ -139,3 +139,4 @@ def test_xpln():
     top,_ = data.betters(len(best.rows))
     top = data.clone(top)
     print("sort with",len(data.rows),"evals",top.stats(top.cols.y, 2, 'mid'),top.stats(top.cols.y, 2, 'div'))
+    
