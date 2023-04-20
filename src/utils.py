@@ -251,6 +251,7 @@ def mergeAny(ranges0):
         ranges1.append(left)
         j = j+1
     return noGaps(ranges0) if len(ranges0)==len(ranges1) else mergeAny(ranges1)
+
 def firstN(sortedRanges,scoreFun):
     print("")
     def function(r):
@@ -446,6 +447,7 @@ def run_stats(data, top_table):
             taxes['samp tax' + str(idx + 1)].append(round(all['avg'][col.txt] - sway_avgs[idx], 2))
             taxes['xpln tax'  + str(idx + 1)].append(round(sway_avgs[idx] - xpln_avgs[idx], 2))
 
+            
         if col.w == -1:
             best_avg = min(sway_avgs)
         else:
