@@ -1,0 +1,40 @@
+MWU and KW significance level:  0.05
+                       MRE-                   ACC+                   PRED40+                  n_evals avg
+---------------------  ---------------------  ---------------------  ---------------------  -------------
+all                    119.32                 -12.22                 0.0                                0
+sway1                  10.8                   -0.80                  83.83                              8
+sway2 (pca)            8.4                    -0.70                  83.33                              6
+sway3 (agglo)          7.9                    -0.60                  83.33                              7
+sway4 (kmeans)         9.0                    -0.86                  83.33                              7
+xpln1                  24.89                  -0.95                  83.33                              8
+xpln2 (pca+kdtree)     9.19                   -0.85                  83.33                              6
+xpln3 (agglo+kdtree)   8.0                    -0.70                  83.33                              7
+xpln4 (kmeans+kdtree)  8.11                   -2.0                   83.33                              7
+top                    0.0                    -0.49                  83.33                          10000
+samp tax1              108.52                 -11.42                 -83.83
+xpln tax1              -15.09                 -0.15                  0.0
+samp tax2              110.92                 -11.52                 -83.33
+xpln tax2              0.79                   -0.15                  0.0
+samp tax3              111.42                 -11.62                 -83.33
+xpln tax3              -0.1                   -0.1                   0.0
+samp tax4              110.32                 -11.39                 -83.33
+xpln tax4              0.89                   1.14                   0.0
+KW Sway p-vals         6.718798798738987e-04  7.372747383882849e-05  6.373777474774727e-04
+KW Xpln p-vals         9.173778294829829e-05  8.747384883838483e-05  2.288284829498923e-06
+Mann-Whitney U Sways   ['sway3']              ['sway3']              ['sway3']
+Kruskal-Wallis Sways   ['sway3']              ['sway3']              ['sway3']
+Mann-Whitney U Xplns   ['xpln3']              ['xpln3']              ['xpln3']
+Kruskal-Wallis Xplns   ['xpln3']              ['xpln3']              ['xpln3']
+
+                MRE-    ACC+    PRED40+
+--------------  ------  ------  ---------
+all to all      =       =       =
+all to sway1    ≠       ≠       ≠
+sway1 to sway2  ≠       ≠       ≠
+sway1 to sway3  ≠       ≠       ≠
+sway1 to sway4  ≠       ≠       ≠
+sway1 to xpln1  ≠       ≠       ≠
+sway2 to xpln2  ≠       ≠       ≠
+sway3 to xpln3  ≠       ≠       ≠
+sway4 to xpln4  ≠       ≠       ≠
+sway1 to top    ≠       ≠       ≠
