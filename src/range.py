@@ -25,16 +25,6 @@ def bin(col,x):
     tmp = (col.hi - col.lo)/(the['bins'] - 1)
     return  1 if col.hi == col.lo else math.floor(x/tmp + .5)*tmp
 
-def value(has, n_b, n_r, s_goal = None):
-    b, r = 0, 0
-    for x, n in has.items():
-        if x == s_goal:
-            b = b + n
-        else:
-            r = r + n
-    b, r = b / (n_b + 1 / float('inf')), r / (n_r + 1 / float('inf'))
-    return b ** 2 / (b + r)
-
 def bins(cols,rowss):
     def rowsMapper(col):
         def xy(x,y):
@@ -49,6 +39,17 @@ def bins(cols,rowss):
             for _,row in enumerate(rows):
                 xy(row.cells[col.at],y)
         return n, ranges
+
+def value(has, n_b, n_r, s_goal = None):
+    b, r = 0, 0
+    for x, n in has.items():
+        if x == s_goal:
+            b = b + n
+        else:
+            r = r + n
+    b, r = b / (n_b + 1 / float('inf')), r / (n_r + 1 / float('inf'))
+    return b ** 2 / (b + r)
+
     
     def colsMapper(col):
         def itself(x):
