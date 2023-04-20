@@ -3,6 +3,10 @@ class Logger:
 
         self.stream = stream
         self.te = te
+    
+    def flush(self):
+        self.stream.flush()
+        self.te.flush()
 
     def write(self, data):
 
@@ -10,8 +14,5 @@ class Logger:
         self.stream.flush()
         self.te.write(data)
 
-    def flush(self):
-        self.stream.flush()
-        self.te.flush()
         
         
