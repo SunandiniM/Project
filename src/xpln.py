@@ -33,6 +33,7 @@ class XPLN:
         return out, most
 
     def xpln(self, data, best, rest):
+        
         def v(has):
             return value(has, len(best.rows), len(rest.rows), 'best')
         
