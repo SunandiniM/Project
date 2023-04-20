@@ -7,15 +7,6 @@ class XPLN:
         self.maxSizes = {}
         self.best = best
         self.rest = rest
-
-    def score(self, ranges):
-        rule = self.RULE(ranges, self.maxSizes)
-        if rule:
-            bestr = selects(rule, self.best.rows)
-            restr = selects(rule, self.rest.rows)
-            if len(bestr) + len(restr) > 0:
-                return value({'best': len(bestr), 'rest': len(restr)}, len(self.best.rows), len(self.rest.rows), 'best'), rule
-        return None,None
     
     def firstN(self, sorted_ranges, scoreFun):
         first = sorted_ranges[0]['val']
@@ -31,6 +22,16 @@ class XPLN:
             if tmp is not None and tmp > most:
                 out, most = rule, tmp
         return out, most
+
+    def score(self, ranges):
+        rule = self.RULE(ranges, self.maxSizes)
+        if rule:
+            bestr = selects(rule, self.best.rows)
+            restr = selects(rule, self.rest.rows)
+            if len(bestr) + len(restr) > 0:
+                return value({'best': len(bestr), 'rest': len(restr)}, len(self.best.rows), len(self.rest.rows), 'best'), rule
+        return None,None
+    
 
     def xpln(self, data, best, rest):
         
