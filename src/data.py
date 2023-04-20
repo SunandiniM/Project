@@ -49,6 +49,21 @@ class DATA:
             data1.add(t)
         return data1
 
+    
+    def better(self, rows1, rows2, s1=0, s2=0, ys=None, x=0, y=0):
+        if isinstance(rows1, ROW):
+            rows1 = [rows1]
+            rows2 = [rows2]
+        if not ys:
+            ys = self.cols.y
+        for col in ys:
+            for row1, row2 in zip(rows1, rows2):
+                x = col.norm(row1.cells[col.at])
+                y = col.norm(row2.cells[col.at])
+                s1 = s1 - math.exp(col.w * (x - y) / len(ys))
+                s2 = s2 - math.exp(col.w * (y - x) / len(ys))
+        return s1 / len(ys) < s2 / len(ys)
+    
     def half(self, rows = None, cols = None, above = None):
         def gap(row1,row2): 
             return self.dist(row1,row2,cols)
@@ -69,20 +84,6 @@ class DATA:
                 right.append(tmp["row"])
         evals = 1 if the['Reuse'] and above else 2
         return left, right, A, B, c, evals
-    
-    def better(self, rows1, rows2, s1=0, s2=0, ys=None, x=0, y=0):
-        if isinstance(rows1, ROW):
-            rows1 = [rows1]
-            rows2 = [rows2]
-        if not ys:
-            ys = self.cols.y
-        for col in ys:
-            for row1, row2 in zip(rows1, rows2):
-                x = col.norm(row1.cells[col.at])
-                y = col.norm(row2.cells[col.at])
-                s1 = s1 - math.exp(col.w * (x - y) / len(ys))
-                s2 = s2 - math.exp(col.w * (y - x) / len(ys))
-        return s1 / len(ys) < s2 / len(ys)
     
     def bdom(self, rows1, rows2, ys=None):
         if isinstance(rows1, ROW):
