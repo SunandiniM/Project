@@ -1,10 +1,9 @@
 from row import ROW
 from cols import COLS
 from utils import *
-from operator import itemgetter
 from functools import cmp_to_key
 from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
+from sklearn.cluster import KMeans, AgglomerativeClustering
 import random
 
 random.seed(the['seed'])
@@ -132,8 +131,6 @@ class DATA:
                     l,r,A,B,evals = self.kmeans(rows)
                 elif algo == 'agglomerative_clustering':
                     l,r,A,B,evals = self.agglomerative_clustering(rows)
-                elif algo == 'dbscan':
-                    l,r,A,B,evals = self.dbscan(rows)
                 elif algo == 'pca':
                     l,r,A,B,evals = self.pca(rows)
                 
@@ -206,23 +203,6 @@ class DATA:
             else:
                 right.append(rows[key])
         return left, right, random.choices(left, k=10), random.choices(right, k=10), 1
-    
-    def dbscan(self, rows=None):
-        left = []
-        right = []
-
-        if not rows:
-            rows = self.rows
-        row_set = np.array([r.cells for r in rows])
-        db = DBSCAN(eps = 3, min_samples = 2)
-        db.fit(row_set)
-
-        for key, value in enumerate(db.labels_):
-            if value == 0:
-                left.append(rows[key])
-            else:
-                right.append(rows[key])
-        return left, right, random.choices(left, k=10), random.choices(right, k=10), db.n_features_in_
     
     def pca(self, rows=None, cols=None, above=None):
         if not rows:

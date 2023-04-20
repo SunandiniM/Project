@@ -1,8 +1,7 @@
-import sys, re, math, copy, json
+import sys, re, math, copy
 from config import *
 from pathlib import Path
 from sym import SYM
-from operator import itemgetter
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
