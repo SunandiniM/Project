@@ -36,3 +36,4 @@ class XPLN2:
             else:
                 rest_preds.append(self.data.rows[idx])
         return best_preds, rest_preds
+    
